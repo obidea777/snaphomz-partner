@@ -1,0 +1,1 @@
+# snaphomz-partner
