@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules # Avoid overwriting `node_modules` inside the container
+      - /usr/src/app/.next # Ensure `.next` folder is generated and used within the container
+    environment:
+      NODE_ENV: production
+    command: ['npm', 'start']
