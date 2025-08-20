@@ -23,7 +23,7 @@ import { showToast } from 'utils/toastHelper'
 const sendVerificationEmail = async (data) => {
   try {
     console.log("DAta : ",data);
-    const accountType = "agent";
+    const accountType = "partner";
     const response = await axios.post(AGENTS_BACKEND_SERVICE, {
       query: `mutation { sendVerification(sendVerificationInput: { accountType: ${accountType?.toUpperCase()}, email: "${data.email}" }) }`,
     })

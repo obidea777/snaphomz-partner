@@ -42,7 +42,7 @@ const loginAgent = atomWithMutation(() => ({
             agentLogin(agentLoginDto: {
               email: "${data.email}",
               password: "${data.password}",
-              userType: "agent",
+              userType: "partner",
             }) {
               id,
               firstName,

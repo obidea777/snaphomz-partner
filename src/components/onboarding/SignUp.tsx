@@ -84,7 +84,7 @@ export default function SignUp({ onNext }: SignUpProps) {
             </div>
             <div>
               <p className="text-black text-left font-medium text-lg">
-                Snaphomz Agent/Broker
+                Snaphomz Partner
               </p>
               <p className="text-[#ACACAC] font-normal text-base">
                 Personal account to manage all your activities.
@@ -101,7 +101,7 @@ export default function SignUp({ onNext }: SignUpProps) {
             />
           </div>
         </Button>
-        <Button
+        {/* <Button
           className="group relative flex items-center justify-between w-full px-6 py-10 bg-white text-black border border-transparent hover:bg-[#FFF3E4] hover:border-[#FF8700] active:bg-[#FFF3E4] active:border-[#FF8700]"
           onClick={() => {
             setSelectedAgentType('External Agent/Broker')
@@ -135,7 +135,7 @@ export default function SignUp({ onNext }: SignUpProps) {
               width={24}
             />
           </div>
-        </Button>
+        </Button> */}
       </section>
     </section>
   )
