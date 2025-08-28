@@ -133,7 +133,7 @@ export const useUserAgentMessageApi = (handleCb?: () => void) => {
                   propertyId
                   roomId
                   propertyName
-                  listingId
+              
                   propertyAddress
                   messages{
                     threadId

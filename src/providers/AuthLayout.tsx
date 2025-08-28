@@ -127,9 +127,7 @@ const GET_USER_DETAILS = `
       lastName
       email
       licenseNumber
-      bio
       profile
-      address
       zipCode
       accountType
     }
@@ -190,7 +188,8 @@ const AuthLayout = ({ children }) => {
     // User IS authenticated
     const userDetails = data?.data?.getUserDetails
 
-    if (userDetails.accountType !== 'AGENT') {
+    console.log(userDetails.accountType)
+    if (userDetails.accountType !== 'PARTNER') {
       router.push('/')
       return
     }

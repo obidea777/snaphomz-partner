@@ -35,6 +35,7 @@ export const getAuthToken = (): string | undefined => {
     path: '/',
     sameSite: 'strict'
   })
+  console.log(authToken,AUTH_TOKEN)
   return typeof authToken === 'string'
     ? JSON.parse(DOMPurify.sanitize(authToken))
     : undefined

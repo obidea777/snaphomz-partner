@@ -3,12 +3,12 @@ export const isLocal = process.env.NODE_ENV === 'development'
 
 export const BASE_URL = 'https://dev.api.ocreal.online/api/v1'
 
-export const AUTH_TOKEN = '##oc-real-agent##%+++chygoz##908rtr'
-export const AUTH_ROLE = 'agent_authentication_role'
-export const AUTH_APP_STATE = `__OCREAL_WEB_AGENT_APP@@000___Context#state`
+export const AUTH_TOKEN = '##oc-real-partner##%+++chygoz##908rtr'
+export const AUTH_ROLE = 'partner_authentication_role'
+export const AUTH_APP_STATE = `__OCREAL_WEB_PARTNER_APP@@000___Context#state`
 
-export const SECURE_LOGIN_KEY = '__OCREAL+AGENT_####DASHBOARD(()_ELR'
-export const FIT_FOR_PURPOSE = '___OCREAL_AGENT_HUSBAND######_ELR@@@'
+export const SECURE_LOGIN_KEY = '__OCREAL+PARTNER_####DASHBOARD(()_ELR'
+export const FIT_FOR_PURPOSE = '___OCREAL_PARTNER_HUSBAND######_ELR@@@'
 export const AGENT_PROPERTIES_KEY = 'agent-properties-ocreal'
 
 export const MORTGAGE_FILE_UPLOAD = process.env.NEXT_PUBLIC_MORTGAGE_SERIVCE_URL || 'http://localhost:4001'

@@ -39,7 +39,7 @@ const loginAgent = atomWithMutation(() => ({
       const response = await axios.post(AGENT_BACKEND_SERVICE, {
         query: `
      query {
-            agentLogin(agentLoginDto: {
+            partnerLogin(PartnerLoginDto: {
               email: "${data.email}",
               password: "${data.password}",
               userType: "partner",
@@ -48,7 +48,6 @@ const loginAgent = atomWithMutation(() => ({
               firstName,
               lastName,
               email,
-              profile
               accountType,
               access_token,
               status,
@@ -122,7 +121,7 @@ export const useAuthApi = () => {
       const newAgent = {
         is_authenticated: true,
         user: {
-          ...data.data.agentLogin
+          ...data.data.partnerLogin
         }
       }
 
@@ -137,7 +136,7 @@ export const useAuthApi = () => {
 
       console.log('CALLED-3')
         const secureLogin = generateSHAString(
-          data.data.agentLogin?.email ?? 'secure@ocreal_agent'
+          data.data.partnerLogin?.email ?? 'secure@ocreal_agent'
         )
 
       console.log('CALLED-2')
@@ -147,7 +146,7 @@ export const useAuthApi = () => {
         })
         storeCookie({
           key: AUTH_TOKEN,
-          value: data?.data?.agentLogin?.access_token
+          value: data?.data?.partnerLogin?.access_token
         })
 
         console.log('CALLED-4')
