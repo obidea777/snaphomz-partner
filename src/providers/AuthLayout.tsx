@@ -173,6 +173,7 @@ const AuthLayout = ({ children }) => {
       return
     }
     const token = getAuthToken()
+    
     // User is NOT authenticated
     if ((status === 'error' || !data?.data?.getUserDetails || !token)) {
       setIsAuthenticated(false)
@@ -185,6 +186,7 @@ const AuthLayout = ({ children }) => {
       return
     }
 
+  
     // User IS authenticated
     const userDetails = data?.data?.getUserDetails
 
