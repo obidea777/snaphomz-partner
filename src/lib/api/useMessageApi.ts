@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { success } from "components/alert/notify";
 import { getAuthToken } from "lib/storage";
@@ -376,12 +376,98 @@ export const useUserAgentMessageApi = (handleCb?: () => void) => {
     },
   });
 
+  const updatePartnerPropertyInviteRequest =  useMutation({
+    mutationKey: ['update_partner_property_invite_request'],
+    mutationFn: async (updateData: any) => {
+      const token = getAuthToken()
+
+      const response = await axios.post(
+        GRAPHQL_URI,
+        {
+          query: `
+            mutation UpdatePartnerPropertyInviteRequest($updatePartnerPropertyInviteRequestInput: UpdatePartnerPropertyInviteRequestInput!) {
+              updatePartnerPropertyInviteRequest(updatePartnerPropertyInviteRequestInput: $updatePartnerPropertyInviteRequestInput) {
+                id
+                partnerId
+                status
+                
+              }
+            }
+          `,
+          variables: { updatePartnerPropertyInviteRequestInput: updateData }
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      return response.data.data.updatePartnerPropertyInviteRequest
+    },
+    onSuccess: (data) => {
+      console.log('Invite request updated:', data)
+    },
+    onError: (err: any) => {
+      console.error('Error updating invite request:', err)
+    }
+  })
+
   return {
     createUserAgentThreadMutation,
     getAllUserAgentThreadsMutation,
     getAllThreadsByUserAgentMutation,
     getAllUserAgentMessagesMutation,
     addParticipantsToThread,
-    getThreadById
+    getThreadById,
+    updatePartnerPropertyInviteRequest 
   };
 };
+
+
+export const usePartnerPropertyInviteRequests = () => {
+
+  const GRAPHQL_URI = process.env.NEXT_PUBLIC_AUTH_SERIVCE_GRAPHQL_URL || "http://localhost:4000/graphql";
+  return useQuery({
+    queryKey: ['partner_property_invite_requests'],
+    queryFn: async () => {
+      const token = getAuthToken()
+
+      const response = await axios.post(
+        GRAPHQL_URI,
+        {
+          query: `
+            query PartnerPropertyInviteRequests {
+              partnerPropertyInviteRequests {
+                id
+                partnerId
+                threadId
+                roomId
+                status
+                address
+                createdBy{
+                  firstName
+                  lastName
+                  email
+                  accountType
+                  profile
+                }
+                
+             
+              }
+            }
+          `
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
+
+      return response.data.data.partnerPropertyInviteRequests
+    }
+  })
+}

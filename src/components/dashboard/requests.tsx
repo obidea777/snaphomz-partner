@@ -4,7 +4,7 @@ import { Pagination } from "@mantine/core";
 import { success } from "components/alert/notify";
 import { useAtom } from "jotai";
 import { usePropertyServiceAPI } from "lib/api/property";
-import { useUserAgentMessageApi } from "lib/api/useMessageApi";
+import { usePartnerPropertyInviteRequests, useUserAgentMessageApi } from "lib/api/useMessageApi";
 import { encryptMessage } from "lib/math-utilities";
 import { useRouter } from "next/navigation";
 import { SocketContext } from "providers/socket.context";
@@ -12,14 +12,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { agentReadWriteAtom } from "store/atoms/agent-atom";
 import { v4 as uuidv4 } from 'uuid';
 
-const PendingRequests: React.FC = () => {
+const PENDINGRequests: React.FC = () => {
   const router = useRouter()
   const [inviteRequests, setInviteRequests] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRequestType, setSelectedRequestType] = useState<"pending" | "accepted" | "rejected">("pending");
+  const [selectedRequestType, setSelectedRequestType] = useState<"PENDING" | "ACCEPTED" | "REJECTED">("PENDING");
   const [agentData] = useAtom(agentReadWriteAtom);
   const [selectedRequest, setSelectedRequest] = useState(null);
-  const [filter, setFilter] = useState<"pending" | "accepted" | "rejected">("pending");
+  const [filter, setFilter] = useState<"PENDING" | "ACCEPTED" | "REJECTED">("PENDING");
   const { socket, state, setState } = useContext(SocketContext)
   const [page, setPage] = useState<number>(1)
   const requests = [
@@ -45,27 +45,34 @@ const PendingRequests: React.FC = () => {
       avatar: "BH",
     },
   ];
-  // const filteredRequests = requests.filter((req) => req.status === filter);
-  const { getAgentInvitations, updateAgentInvitations } = usePropertyServiceAPI()
+  const {updatePartnerPropertyInviteRequest} = useUserAgentMessageApi()
+  const {data:partnerInvites} = usePartnerPropertyInviteRequests()
 
-  const {createUserAgentThreadMutation} = useUserAgentMessageApi()
-
-  const getInvitationRequests = () => {
-    setInviteRequests([])
-    setLoading(true)
+ 
+  const updateInvitation = (id: string, status: string, threadId:string) => {
     const payload = {
-      agentId: agentData?.user?.id,
-      invitationType: filter,
-      limit: 10,
-      offset: 0
+      id,
+      status,
+      threadId,
+
     }
-    getAgentInvitations.mutate(payload, {
+    console.log(payload)
+    updatePartnerPropertyInviteRequest.mutate(payload, {
       onSuccess: (response) => {
-        setLoading(false)
-        console.log("response : ", response);
-        const reversedRequest = response?.slice()?.reverse()
-        console.log(reversedRequest)
-        setInviteRequests(response)
+        // setLoading(false)
+        // setSelectedRequest(null)
+        // setSelectedRequestType(null)
+        // success({message: `Invitation ${invitationType} successfully`})
+        // const payload = {
+        //   propertyName:data?.engagement?.propertyName,
+        //   agentName:`${agentData?.user?.firstName} ${agentData?.user?.lastName}`,
+        //   status:invitationType,
+        //   userId:data?.userId
+        // }
+        // if(socket){
+        //   socket.emit('invitation_update',payload);
+        // }
+        
       },
       onError: (error) => {
         console.log('Error in mutation: ', error)
@@ -74,88 +81,29 @@ const PendingRequests: React.FC = () => {
     })
   }
 
-  const handleThreadGeneration = async (threadData: any) => {
-    try {
+  console.log(inviteRequests, console.log(partnerInvites))
 
-      const payload = {
-        propertyId:threadData?.engagement?.propertyId,
-        threadName: threadData?.engagement?.propertyName,
-        propertyName: threadData?.engagement?.propertyName,
-        listingId:threadData?.engagement?.listingId.toString() || "" ,
-        propertyAddress:threadData?.engagement?.propertyAddress,
-        propertyImage:threadData?.engagement?.propertyImage,
-        propertyOwnerId: "29a5174b-b985-4239-a996-0c5d9cbc5591",
-        buyerAgentId:threadData?.agentId,
-        userType:'BUYER',
-        userId:threadData?.userId,
-        roomId:uuidv4(),
-        parentMessage:encryptMessage("Let's connect and talk")
-      }
-      createUserAgentThreadMutation.mutate(payload, {
-        onSuccess: (data) => {
-          router.push('/dashboard/messages')
-        },
-        onError: (error) => {
-          console.log("Error in mutation: ", error);
-        },
-      })
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const updateInvitationRequests = (id: string, invitationType: string,data:any) => {
-    const payload = {
-      agentId: agentData?.user?.id,
-      invitationType: invitationType,
-      id
-    }
-    updateAgentInvitations.mutate(payload, {
-      onSuccess: (response) => {
-        setLoading(false)
-        setSelectedRequest(null)
-        setSelectedRequestType(null)
-        success({message: `Invitation ${invitationType} successfully`})
-        const payload = {
-          propertyName:data?.engagement?.propertyName,
-          agentName:`${agentData?.user?.firstName} ${agentData?.user?.lastName}`,
-          status:invitationType,
-          userId:data?.userId
-        }
-        if(socket){
-          socket.emit('invitation_update',payload);
-        }
-        getInvitationRequests()
-      },
-      onError: (error) => {
-        console.log('Error in mutation: ', error)
-        setLoading(false)
-      }
-    })
-  }
-
-  console.log(inviteRequests)
-
-  useEffect(() => {
-    if (agentData?.user?.id) {
-      getInvitationRequests()
-    }
-  }, [agentData, filter])
+  // useEffect(() => {
+  //   if (agentData?.user?.id) {
+  //     getInvitationRequests()
+  //   }
+  // }, [agentData, filter])
 
   const indexOfLastProperty = page * 5
   const indexOfFirstProperty = indexOfLastProperty - 5
-  const currentInviteRequest = inviteRequests.slice(indexOfFirstProperty, indexOfLastProperty)
+  const currentInviteRequest = partnerInvites?.slice(indexOfFirstProperty, indexOfLastProperty)
 
   return (
     <div className=" p-6 rounded-lg  w-full  mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Pending Request</h2>
+        <h2 className="text-xl font-semibold">PENDING Request</h2>
         <span className="bg-orange-500 text-white px-2 py-1 text-sm rounded-full">
           {requests.length}
         </span>
       </div>
       <div className="flex mt-4 justify-start space-x-4 mb-6">
-        {["pending", "accepted", "rejected"].map((status) => (
+        {["PENDING", "ACCEPTED", "REJECTED"].map((status) => (
           <button
             key={status}
             onClick={() => setFilter(status as any)}
@@ -174,7 +122,7 @@ const PendingRequests: React.FC = () => {
           <div className="flex justify-center items-center h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900" />
           </div>
-        ) : inviteRequests.length ? (
+        ) : partnerInvites?.length ? (
           currentInviteRequest?.slice()?.map((req) => (
             <div
               key={req.id}
@@ -186,16 +134,16 @@ const PendingRequests: React.FC = () => {
                   <img src={req?.user?.image} alt={req?.user?.firstName} className="w-10 h-10 rounded-full" />
                 ) : (
                   <div className="w-10 h-10 flex items-center justify-center bg-gray-300 text-gray-700 font-semibold rounded-full">
-                    {`${req?.user?.firstName?.charAt(0).toUpperCase()}${req?.user?.lastName?.charAt(0).toUpperCase()}`}
+                    {`${req?.createdBy?.firstName?.charAt(0).toUpperCase()}${req?.createdBy?.lastName?.charAt(0).toUpperCase()}`}
                   </div>
                 )}
 
                 <div>
                   <p className="text-sm">
-                    <strong>{req?.user?.firstName} {req?.user?.lastName} </strong> has invited you to engage this property as a{" "}
+                    <strong>{req?.createdBy?.firstName} {req?.createdBy?.lastName} </strong> has invited you to engage this property as a{" "}
                     <span className="font-semibold">Buyer agent.</span>
                   </p>
-                  <p className="text-xs text-gray-500">{req?.engagement?.propertyAddress}</p>
+                  <p className="text-xs text-gray-500">{req?.address}</p>
                   <a href="#" className="text-orange-500 text-sm">
                     View Property
                   </a>
@@ -204,37 +152,25 @@ const PendingRequests: React.FC = () => {
 
               {/* Action Buttons */}
               {
-                req?.is_accepted==="pending"?<div className="flex space-x-2">
+                req?.status==="PENDING"? <div className="flex space-x-2">
                 <button 
                   className="bg-black text-white px-4 py-1 rounded-md"
-                  disabled={req?.id === selectedRequest && selectedRequestType === "accepted"}
+                  disabled={req?.id === selectedRequest && selectedRequestType === "ACCEPTED"}
                   onClick={(e) => {
                     e.preventDefault()
                     setSelectedRequest(req.id);
-                    updateInvitationRequests(req.id, "accepted",req)
-                    // handleThreadGeneration({
-                    //   propertyId: property?.id,
-                    //   threadName: "Property Message Thread",
-                    //   propertyName: "New Property Thread",
-                    //   listingId:property?.listingId.toString() || "" ,
-                    //   propertyAddress:property?.propertyAddress,
-                    //   propertyOwnerId: "29a5174b-b985-4239-a996-0c5d9cbc5591",
-                    //   buyerAgentId: agent?.id,
-                    //   userType:'BUYER',
-                    //   userId:user?.id,
-                    //   parentMessage:encryptMessage("Let's connect and talk")
-                    // })
-                    handleThreadGeneration(req)
+                    updateInvitation(req.id, "ACCEPTED",req.threadId)
+  
                   }}>
                   Accept
                 </button>
                 <button 
                 className="border border-black text-black px-4 py-1 rounded-md"
-                disabled={req?.id===selectedRequest && selectedRequestType==="rejected"}
+                disabled={req?.id === selectedRequest && selectedRequestType==="REJECTED"}
                   onClick={(e) => {
                     e.preventDefault()
                     setSelectedRequest(req.id);
-                    updateInvitationRequests(req.id, "rejected",req)
+                    updateInvitation(req.id, "REJECTED",req?.threadId)
                   }}
                 >
                   Decline
@@ -265,4 +201,4 @@ const PendingRequests: React.FC = () => {
   );
 };
 
-export default PendingRequests;
+export default PENDINGRequests;
