@@ -879,7 +879,56 @@ export const useAgentConversationApi = (handleCb?: () => void) => {
     },
   });
 
+    const addParticipantToConversationThread = useMutation({
+      mutationKey: ['addParticipantToConversationThread'],
+      mutationFn: async (data: any) => {
+        try {
+          const response = await axios.post(
+            GRAPHQL_URI,
+            {
+              query: `
+                mutation addParticipantToConversationThread($threadId: String!, $email: String!) {
+                  add_participant_to_conversation_thread(threadId: $threadId, email: $email) {
+                    id
+                    threadId
+                    userId
+                    approvalStatus
+                    joinDate
+                  }
+                }`,
+              variables: { ...data }, // Spread the data to get threadId and email
+            }
+          );
+  
+          // Check for errors in the response
+          if (response?.data?.errors || response.status !== 200) {
+            const errorMessage =
+              response?.data?.errors?.[0]?.message || 'Failed to add participant to thread';
+            throw new Error(errorMessage); // Throw error if response contains errors or status is not 200
+          }
+  
+          return response.data; // Return the successful response data
+        } catch (error) {
+          console.error('Error adding participant to thread:', error);
+          throw error; // Re-throw error to be caught by onError callback
+        }
+      },
+      onSuccess: (data) => {
+        // Handle success response
+        success({ message: 'Invitation sent to user successfully' });
+        if (handleCb) handleCb(); // Optional callback after success
+      },
+      onError: (error: any) => {
+        console.error('Error adding participant to thread:', error);
+  
+        // Ensure error message is properly extracted from the error object
+        const errorMessage = error?.message || 'An error occurred while adding participant.';
+        error({ message: errorMessage });
+      },
+    });
+
   return {
+    addParticipantToConversationThread,
     createThreadMutation,
     getAllThreadsMutation,
     getAllThreadsByUserMutation,
