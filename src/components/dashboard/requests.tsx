@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { Pagination } from "@mantine/core";
 import { success } from "components/alert/notify";
@@ -25,17 +25,17 @@ const PENDINGRequests: React.FC = () => {
   const requests = [
     {
       id: 1,
-      name: "Katherine Paul",
-      role: "buyer",
-      address: "94040 San Antonio 61 Sheffield Court",
-      avatar: "/user1.jpg", // Use actual image URL or initials
+      name: 'Katherine Paul',
+      role: 'buyer',
+      address: '94040 San Antonio 61 Sheffield Court',
+      avatar: '/user1.jpg' // Use actual image URL or initials
     },
     {
       id: 2,
-      name: "Scarlett Johnson",
-      role: "seller",
-      address: "94040 San Antonio 61 Sheffield Court",
-      avatar: "SJ",
+      name: 'Scarlett Johnson',
+      role: 'seller',
+      address: '94040 San Antonio 61 Sheffield Court',
+      avatar: 'SJ'
     },
     {
       id: 3,
@@ -107,11 +107,11 @@ const PENDINGRequests: React.FC = () => {
           <button
             key={status}
             onClick={() => setFilter(status as any)}
-            className={`px-4 py-1 rounded-full border ${filter === status
-              ? "bg-black text-white"
-              : "border-black text-black hover:bg-gray-100"
-              }`}
-          >
+            className={`px-4 py-1 rounded-full border ${
+              filter === status
+                ? 'bg-black text-white'
+                : 'border-black text-black hover:bg-gray-100'
+            }`}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
         ))}
@@ -126,12 +126,15 @@ const PENDINGRequests: React.FC = () => {
           currentInviteRequest?.slice()?.map((req) => (
             <div
               key={req.id}
-              className="flex items-center justify-between p-4 bg-gray-100 rounded-lg"
-            >
+              className="flex items-center justify-between p-4 bg-gray-100 rounded-lg">
               {/* Left Side */}
               <div className="flex items-center space-x-4">
                 {req?.user?.image ? (
-                  <img src={req?.user?.image} alt={req?.user?.firstName} className="w-10 h-10 rounded-full" />
+                  <img
+                    src={req?.user?.image}
+                    alt={req?.user?.firstName}
+                    className="w-10 h-10 rounded-full"
+                  />
                 ) : (
                   <div className="w-10 h-10 flex items-center justify-center bg-gray-300 text-gray-700 font-semibold rounded-full">
                     {`${req?.createdBy?.firstName?.charAt(0).toUpperCase()}${req?.createdBy?.lastName?.charAt(0).toUpperCase()}`}
@@ -182,23 +185,19 @@ const PENDINGRequests: React.FC = () => {
         ) : (
           <p className="text-center text-gray-500">No {filter} requests.</p>
         )}
-               <Pagination
-        value={page}
-        onChange={setPage}
-        total={Math.ceil(inviteRequests.length / 5)}
-        color="orange"
-        size='lg'
-        boundaries={0}
-        radius={'xl'}
-        mb={24}
-      />
-
+        <Pagination
+          value={page}
+          onChange={setPage}
+          total={Math.ceil(inviteRequests.length / 5)}
+          color="orange"
+          size="lg"
+          boundaries={0}
+          radius={'xl'}
+          mb={24}
+        />
       </div>
-
-
-      
     </div>
-  );
-};
+  )
+}
 
 export default PENDINGRequests;
