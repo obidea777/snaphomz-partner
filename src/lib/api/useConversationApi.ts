@@ -893,7 +893,7 @@ export const useAgentConversationApi = (handleCb?: () => void) => {
                     threadId
                     userId
                     approvalStatus
-                    joinDate
+                    joinedAt
                   }
                 }`,
               variables: { ...data }, // Spread the data to get threadId and email

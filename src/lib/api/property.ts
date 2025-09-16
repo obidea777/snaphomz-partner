@@ -557,6 +557,7 @@ export const usePropertyServiceAPI = (handleCb?: () => void) => {
                 getInvitationRequests(invitationData: $invitationData) {
                   id
                   threadId
+                  email
                   agentId
                   agentType
                   engagementId

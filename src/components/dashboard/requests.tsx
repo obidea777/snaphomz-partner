@@ -54,7 +54,7 @@ const PendingRequests: React.FC = () => {
   const { getAgentInvitations, updateAgentInvitations } =
     usePropertyServiceAPI()
 
-  const { createThreadMutation } = useAgentConversationApi()
+  const { createThreadMutation, addParticipantToConversationThread } = useAgentConversationApi()
 
   const getInvitationRequests = () => {
     setInviteRequests([])
@@ -83,35 +83,50 @@ const PendingRequests: React.FC = () => {
   const handleThreadGeneration = async (threadData: any) => {
     try {
       console.log('threadData', threadData)
+      // const payload = {
+      //   propertyId: threadData?.engagement?.propertyId,
+      //   threadName: threadData?.engagement?.propertyName,
+      //   propertyName: threadData?.engagement?.propertyName,
+      //   listingId: threadData?.engagement?.listingId.toString() || '',
+      //   // propertyAddress:threadData?.engagement?.propertyAddress,
+      //   propertyImage: threadData?.engagement?.propertyImage,
+      //   propertyOwnerId: '29a5174b-b985-4239-a996-0c5d9cbc5591',
+      //   buyerAgentId: threadData?.agentId,
+      //   sellerAgentId: threadData?.engagement?.sellerAgentId,
+      //   // userType:'partner',
+      //   userId: threadData?.userId,
+      //   roomId: uuidv4(),
+      //   message: encryptMessage("Let's connect and talk"),
+      //   engagementId: threadData?.engagement?.id
+      // }
+      // createThreadMutation.mutate(payload, {
+      //   onSuccess: (data) => {
+      //     updateInvitationRequests(threadData.id, 'accepted', threadData)
+      //     router.push('/dashboard/chat')
+      //   },
+      //   onError: (error) => {
+      //     console.log('Error in mutation: ', error)
+      //   }
+      // })
+
       const payload = {
-        propertyId: threadData?.engagement?.propertyId,
-        threadName: threadData?.engagement?.propertyName,
-        propertyName: threadData?.engagement?.propertyName,
-        listingId: threadData?.engagement?.listingId.toString() || '',
-        // propertyAddress:threadData?.engagement?.propertyAddress,
-        propertyImage: threadData?.engagement?.propertyImage,
-        propertyOwnerId: '29a5174b-b985-4239-a996-0c5d9cbc5591',
-        buyerAgentId: threadData?.agentId,
-        sellerAgentId: threadData?.engagement?.sellerAgentId,
-        // userType:'partner',
-        userId: threadData?.userId,
-        roomId: uuidv4(),
-        message: encryptMessage("Let's connect and talk"),
-        engagementId: threadData?.engagement?.id
+        threadId: threadData.threadId,
+        email: threadData.email
       }
-      createThreadMutation.mutate(payload, {
-        onSuccess: (data) => {
+      addParticipantToConversationThread.mutate(payload, {
+        onSuccess: (data: any) => {
+          console.log("Participant added successfully", data)
           updateInvitationRequests(threadData.id, 'accepted', threadData)
-          router.push('/dashboard/chat')
         },
-        onError: (error) => {
-          console.log('Error in mutation: ', error)
-        }
-      })
+        onError: (error: any) => {
+          console.log(error?.message)
+        },
+      });
     } catch (error) {
       console.log(error)
     }
   }
+  
   const updateInvitationRequests = (
     id: string,
     invitationType: string,
@@ -175,11 +190,10 @@ const PendingRequests: React.FC = () => {
           <button
             key={status}
             onClick={() => setFilter(status as any)}
-            className={`px-4 py-1 rounded-full border ${
-              filter === status
-                ? 'bg-black text-white'
-                : 'border-black text-black hover:bg-gray-100'
-            }`}>
+            className={`px-4 py-1 rounded-full border ${filter === status
+              ? 'bg-black text-white'
+              : 'border-black text-black hover:bg-gray-100'
+              }`}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
         ))}
