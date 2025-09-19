@@ -533,7 +533,7 @@ export default function ChatBoxComponent(props: any) {
         }
         if (message.trim() !== "") {
           socket?.emit(
-            "sendMessage",
+            "sendMessagetoThread",
             {
               ...newMessage,
               messageType: "text",
